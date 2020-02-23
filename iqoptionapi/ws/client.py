@@ -44,12 +44,28 @@ class WebsocketClient(object):
         message = json.loads(str(message))
         if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
                                    "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
-                                   'socket-option-closed', 'socket-option-opened', 'option-opened']:
+                                   'socket-option-closed', 'socket-option-opened', 'option-opened',
+                                   "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed']:
           print(message)
 
         if message["name"] == "timeSync":
             self.api.timesync.server_timestamp = message["msg"]
-         #######################################################
+        elif message["name"] == "leaderboard-deals-client":
+            try:
+                self.api.top_user = message["msg"]["result"]["top"]
+            except:
+                logger.error("Cannot get leaderboard")
+                pass
+        elif message["name"] == "live-deal-binary-option-placed":
+            try:
+                # logger.info(message)
+                if message["msg"]['user_id'] in  self.api.top_user_ids:
+                    logger.info(message["msg"])
+                    self.api.top_orders.append(message["msg"])
+            except:
+                logger.error("Cannot get top order")
+                pass
+    #######################################################
         #---------------------for_realtime_candle______________
         #######################################################
         elif message["name"] == "candle-generated":

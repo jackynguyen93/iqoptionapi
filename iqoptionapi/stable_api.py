@@ -1203,3 +1203,21 @@ class IQ_Option:
         return self.api.socket_option_opened
     def del_option_open_by_other_pc(self,id):
         del self.api.socket_option_opened[id]
+
+
+    def get_top_user(self, ranks):
+        self.api.get_top_user()
+
+        while self.api.top_user == None:
+            pass
+
+        top_user_ids = []
+        for rank in ranks:
+            top_user_ids.append(self.api.top_user[str(rank)]['user_id'] )
+        print(top_user_ids)
+        self.api.top_user_ids = top_user_ids
+        return self.api.top_user
+
+    def get_top_user_order(self):
+        if len(self.api.top_orders) > 0:
+            return self.api.top_orders.pop()

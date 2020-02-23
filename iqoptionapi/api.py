@@ -42,6 +42,7 @@ from iqoptionapi.ws.chanels.get_available_leverages import Get_available_leverag
 from iqoptionapi.ws.chanels.cancel_order import Cancel_order
 from iqoptionapi.ws.chanels.close_position import Close_position
 from iqoptionapi.ws.chanels.get_overnight_fee import Get_overnight_fee
+from iqoptionapi.ws.chanels.Get_top_user import Get_top_user
 from iqoptionapi.ws.chanels.heartbeat import Heartbeat
 
  
@@ -107,6 +108,9 @@ class IQOptionAPI(object):  # pylint: disable=too-many-instance-attributes
     order_canceled = None
     close_position_data = None
     overnight_fee = None
+    top_user = None
+    top_orders = []
+    top_user_ids = []
     # ---for real time
     digital_option_placed_id = None
     
@@ -613,6 +617,10 @@ class IQOptionAPI(object):  # pylint: disable=too-many-instance-attributes
     @property
     def get_overnight_fee(self):
         return Get_overnight_fee(self)
+
+    @property
+    def get_top_user(self):
+        return Get_top_user(self)
 # -------------------------------------------------------
 
     @property
