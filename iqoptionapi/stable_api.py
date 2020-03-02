@@ -488,7 +488,7 @@ class IQ_Option:
         start = time.time()
         self.api.candle_generated_check[str(ACTIVE)][int(size)] = {}
         while True:
-            if time.time()-start > 20:
+            if time.time()-start > 60:
                 logging.error(
                     '**error** start_candles_one_stream late for 20 sec')
                 return False
@@ -716,6 +716,19 @@ class IQ_Option:
 
         return self.api.buy_successful[ACTIVE_ID],self.api.buy_id[ACTIVE_ID]
 
+    def buyv4(self, price, ACTIVE_ID, ACTION, expire, option_mode):
+        ACTIVE_ID = int(ACTIVE_ID)
+        self.api.buy_successful[ACTIVE_ID] = None
+        self.api.buy_id[ACTIVE_ID] = None
+        self.request_count = self.request_count + 1
+        self.api.buyv4(price, ACTIVE_ID, ACTION, expire, option_mode, self.request_count)
+        start_t=time.time()
+        while self.api.buy_successful[ACTIVE_ID] == None and self.api.buy_id[ACTIVE_ID] == None:
+            if time.time()-start_t>=30:
+                logging.error('**warning** buy late 30 sec')
+                return False,None
+
+        return self.api.buy_successful[ACTIVE_ID],self.api.buy_id[ACTIVE_ID]
 
     def sell_option(self, options_ids):
         self.api.sell_option(options_ids)
@@ -1217,6 +1230,9 @@ class IQ_Option:
         print(top_user_ids)
         self.api.top_user_ids = top_user_ids
         return self.api.top_user
+
+    def sub_top_user(self):
+        self.api.get_top_user()
 
     def get_top_user_order(self):
         if len(self.api.top_orders) > 0:

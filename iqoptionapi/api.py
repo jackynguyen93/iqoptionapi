@@ -24,6 +24,7 @@ from iqoptionapi.ws.chanels.setactives import SetActives
 from iqoptionapi.ws.chanels.candles import GetCandles
 from iqoptionapi.ws.chanels.buyv2 import Buyv2
 from iqoptionapi.ws.chanels.buyv3 import Buyv3
+from iqoptionapi.ws.chanels.buyv4 import Buyv4
 
 from iqoptionapi.ws.chanels.api_game_betinfo import Game_betinfo
 from iqoptionapi.ws.chanels.instruments import Get_instruments
@@ -515,6 +516,10 @@ class IQOptionAPI(object):  # pylint: disable=too-many-instance-attributes
     @property
     def buyv3(self):
         return Buyv3(self)
+
+    @property
+    def buyv4(self):
+        return Buyv4(self)
 
     @property
     def buy(self):

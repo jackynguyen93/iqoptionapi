@@ -45,7 +45,7 @@ class WebsocketClient(object):
         if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
                                    "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
                                    'socket-option-closed', 'socket-option-opened', 'option-opened',
-                                   "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed']:
+                                   "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
           print(message)
 
         if message["name"] == "timeSync":
@@ -58,10 +58,11 @@ class WebsocketClient(object):
                 pass
         elif message["name"] == "live-deal-binary-option-placed":
             try:
+                self.api.top_orders.append(message["msg"])
                 # logger.info(message)
-                if message["msg"]['user_id'] in  self.api.top_user_ids:
-                    logger.info(message["msg"])
-                    self.api.top_orders.append(message["msg"])
+                # if message["msg"]['user_id'] in  self.api.top_user_ids:
+                #     logger.info(message["msg"])
+                #     self.api.top_orders.append(message["msg"])
             except:
                 logger.error("Cannot get top order")
                 pass
@@ -148,6 +149,7 @@ class WebsocketClient(object):
         #elif "we have user authoget_balancerized" we get buyComplete
         #I Suggest if you get selget_balancef.api.buy_successful==False you need to reconnect iqoption server
         elif message["name"] == "buyComplete":
+            logger.debug('buy complete')
             try:
                 self.api.buy_successful = message["msg"]["isSuccessful"]
                 self.api.buy_id= message["msg"]["result"]["id"]
@@ -158,9 +160,12 @@ class WebsocketClient(object):
         #*********************buyv3
         #buy_multi_option
         elif message["name"] == "option":
+            logger.debug('AAAAAAA')
+            logger.debug('AAAAAAA' + str(message))
             self.api.buy_multi_option[int(message["request_id"])] = message["msg"]
             try:
                 ACTIVE = message["msg"]['act']
+
                 if 'id' in message["msg"]:
                     self.api.buy_successful[ACTIVE] = True
                     self.api.buy_id[ACTIVE] =  message["msg"]['id']
@@ -168,7 +173,7 @@ class WebsocketClient(object):
                     self.api.buy_successful[ACTIVE] = False
             except Exception as e:
 
-                logger.error(e)
+                logger.error('fail to request buy' , e)
 
         #**********************************************************
         elif message["name"] == "listInfoData":
@@ -212,7 +217,7 @@ class WebsocketClient(object):
                 else:
                     self.api.game_betinfo.isSuccessful = False
             except:
-                logger.error(e)
+                logger.error('fail api_game_betinfo_result', e)
                 pass
         elif message["name"]=="traders-mood-changed":
             self.api.traders_mood[message["msg"]["asset_id"]]=message["msg"]["value"]
@@ -254,6 +259,7 @@ class WebsocketClient(object):
             try:
                 self.api.digital_option_placed_id=message["msg"]["id"]
             except:
+                logger.error('fail digital-option-placed')
                 self.api.digital_option_placed_id="error"
         elif message["name"]=="result":
             self.api.result=message["msg"]["success"]

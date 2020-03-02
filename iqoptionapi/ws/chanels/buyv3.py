@@ -30,6 +30,7 @@ class Buyv3(Base):
         }
         self.send_websocket_request(self.name, data,str(request_id))
 
+
 """
     # thank Darth-Carrotpie's code
     # https://github.com/Lu-Yi-Hsun/iqoptionapi/issues/6
