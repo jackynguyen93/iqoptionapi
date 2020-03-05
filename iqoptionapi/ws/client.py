@@ -164,13 +164,13 @@ class WebsocketClient(object):
             logger.debug('AAAAAAA' + str(message))
             self.api.buy_multi_option[int(message["request_id"])] = message["msg"]
             try:
-                ACTIVE = message["msg"]['act']
-
-                if 'id' in message["msg"]:
-                    self.api.buy_successful[ACTIVE] = True
-                    self.api.buy_id[ACTIVE] =  message["msg"]['id']
-                else:
-                    self.api.buy_successful[ACTIVE] = False
+                if 'act' in message["msg"]:
+                    ACTIVE = message["msg"]['act']
+                    if 'id' in message["msg"]:
+                        self.api.buy_successful[ACTIVE] = True
+                        self.api.buy_id[ACTIVE] =  message["msg"]['id']
+                    else:
+                        self.api.buy_successful[ACTIVE] = False
             except Exception as e:
 
                 logger.error('fail to request buy' , e)

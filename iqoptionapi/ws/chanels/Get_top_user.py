@@ -70,6 +70,8 @@ class Get_top_user(Base):
 
         self.send_websocket_request(self.name, data)
 
-        data ={"name":"live-deal-binary-option-placed","version":"1.0","params":{"routingFilters":{"instrument_type":"turbo"}}}
+        data ={"name":"live-deal-binary-option-placed","version":"1.0",
+               "params":{"routingFilters":{
+               }}}
 
         self.send_websocket_request("subscribeMessage", data)
