@@ -112,6 +112,7 @@ class IQOptionAPI(object):  # pylint: disable=too-many-instance-attributes
     top_user = None
     top_orders = []
     top_user_ids = []
+    user_filter = []
     # ---for real time
     digital_option_placed_id = None
     

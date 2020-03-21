@@ -58,7 +58,11 @@ class WebsocketClient(object):
                 pass
         elif message["name"] == "live-deal-binary-option-placed":
             try:
-                self.api.top_orders.append(message["msg"])
+                if len(self.api.user_filter) > 0 :
+                    if message["msg"]['user_id'] in self.api.user_filter:
+                        self.api.top_orders.append(message["msg"])
+                else:
+                    self.api.top_orders.append(message["msg"])
                 # logger.info(message)
                 # if message["msg"]['user_id'] in  self.api.top_user_ids:
                 #     logger.info(message["msg"])
