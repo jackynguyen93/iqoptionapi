@@ -39,14 +39,13 @@ class WebsocketClient(object):
     def on_message(self, message): # pylint: disable=unused-argument
         """Method to process websocket messages."""
         logger = logging.getLogger(__name__)
-        logger.debug(message)
 
         message = json.loads(str(message))
-        if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
-                                   "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
-                                   'socket-option-closed', 'socket-option-opened', 'option-opened',
-                                   "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
-          print(message)
+        # if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
+        #                            "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
+        #                            'socket-option-closed', 'socket-option-opened', 'option-opened',
+        #                            "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
+        #   print(message)
 
         if message["name"] == "timeSync":
             self.api.timesync.server_timestamp = message["msg"]
@@ -153,7 +152,6 @@ class WebsocketClient(object):
         #elif "we have user authoget_balancerized" we get buyComplete
         #I Suggest if you get selget_balancef.api.buy_successful==False you need to reconnect iqoption server
         elif message["name"] == "buyComplete":
-            logger.debug('buy complete')
             try:
                 self.api.buy_successful = message["msg"]["isSuccessful"]
                 self.api.buy_id= message["msg"]["result"]["id"]
@@ -164,8 +162,6 @@ class WebsocketClient(object):
         #*********************buyv3
         #buy_multi_option
         elif message["name"] == "option":
-            logger.debug('AAAAAAA')
-            logger.debug('AAAAAAA' + str(message))
             self.api.buy_multi_option[int(message["request_id"])] = message["msg"]
             try:
                 if 'act' in message["msg"]:
