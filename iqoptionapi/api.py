@@ -111,6 +111,7 @@ class IQOptionAPI(object):  # pylint: disable=too-many-instance-attributes
     overnight_fee = None
     top_user = None
     top_orders = []
+    running_id = None
     top_user_ids = []
     user_filter = []
     # ---for real time

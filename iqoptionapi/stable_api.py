@@ -1234,6 +1234,9 @@ class IQ_Option:
     def sub_top_user(self):
         self.api.get_top_user()
 
+    def get_running_id(self):
+        return self.api.running_id
+
     def get_top_user_order(self, user_filter = []):
         self.api.user_filter = user_filter
         if len(self.api.top_orders) > 0:
