@@ -461,6 +461,14 @@ class IQOptionAPI(object):  # pylint: disable=too-many-instance-attributes
         return Unsubscribe_commission_changed(self)
         
 # --------------------------------------------------------------------------------
+    def subscribe_balance_changed(self):
+
+        data = json.dumps(dict(name="subscribeMessage",
+                               msg={"name":"balance-changed",
+                                    "version":"1.0"
+                                    }, request_id= 9999))
+
+        self.websocket.send(data)
 # -----------------------------------------------------------------------------------
 
     @property

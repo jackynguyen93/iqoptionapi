@@ -41,12 +41,13 @@ class WebsocketClient(object):
         logger = logging.getLogger(__name__)
 
         message = json.loads(str(message))
-        # if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
-        #                            "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
-        #                            'socket-option-closed', 'socket-option-opened', 'option-opened',
-        #                            "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
-        #   print(message)
-
+        #### for testing
+        if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
+                                   "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
+                                   'socket-option-closed', 'socket-option-opened', 'option-opened',
+                                   "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
+            print(message)
+        #####
         if message["name"] == "timeSync":
             self.api.timesync.server_timestamp = message["msg"]
         elif message["name"] == "leaderboard-deals-client":
@@ -297,7 +298,11 @@ class WebsocketClient(object):
             self.api.instrument_quotes_generated_raw_data[Active_name][period]=message
         elif message["name"]=="training-balance-reset":
             self.api.training_balance_reset_request=message["msg"]["isSuccessful"]
- 
+        elif message["name"] == "balance-changed":
+            try:
+                self.api.profile.balance = message["msg"]["current_balance"]["amount"]
+            except:
+                pass
             
     
     @staticmethod

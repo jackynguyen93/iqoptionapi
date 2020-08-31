@@ -329,16 +329,16 @@ class IQ_Option:
         return self.api.profile.balance
 
     def get_balance(self):
-        self.api.profile.balance = None
-        while True:
-            try:
-                respon = self.get_profile()
-                self.api.profile.balance = respon["result"]["balance"]
-                break
-            except:
-                logging.error('**error** get_balance()')
-
-            time.sleep(self.suspend)
+        # self.api.profile.balance = None
+        # while True:
+        #     try:
+        #         respon = self.get_profile()
+        #         self.api.profile.balance = respon["result"]["balance"]
+        #         break
+        #     except:
+        #         logging.error('**error** get_balance()')
+        #
+        #     time.sleep(self.suspend)
         return self.api.profile.balance
 
     def get_balances(self):
@@ -577,7 +577,8 @@ class IQ_Option:
         return self.api.subscribe_commission_changed_data[instrument_type]
 
 # -----------------------------------------------
-
+    def subscribe_balance_changed(self):
+        self.api.subscribe_balance_changed()
 # -----------------traders_mood----------------------
 
     def start_mood_stream(self, ACTIVES):
