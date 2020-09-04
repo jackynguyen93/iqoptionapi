@@ -8,7 +8,7 @@ class Buyv3(Base):
 
     name = "sendMessage"
 
-    def __call__(self, price, active, direction, duration,request_id):
+    def __call__(self, price, active, direction, duration, request_id, balance_id):
 
         # thank Darth-Carrotpie's code
         # https://github.com/Lu-Yi-Hsun/iqoptionapi/issues/6
@@ -23,7 +23,7 @@ class Buyv3(Base):
                      "expired": int(exp),
                      "direction": direction.lower(),
                      "option_type_id":option,
-                     "user_balance_id": int(self.api.profile.balance_id)
+                     "user_balance_id": balance_id
                      },
             "name": "binary-options.open-option",
             "version": "1.0"

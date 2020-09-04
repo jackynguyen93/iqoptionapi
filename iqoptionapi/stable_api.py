@@ -326,7 +326,7 @@ class IQ_Option:
                 logging.error('**error** get_balance()')
 
             time.sleep(self.suspend)
-        return self.api.profile.balance
+        return self.api.profile.balance_id
 
     def get_balance(self):
         # self.api.profile.balance = None
@@ -680,7 +680,7 @@ class IQ_Option:
         if len(price)==len(ACTIVES)==len(ACTION)==len(expirations):
             buy_len=len(price)
             for idx in range(buy_len):
-                self.api.buyv3(price[idx], OP_code.ACTIVES[ACTIVES[idx]], ACTION[idx], expirations[idx],idx)
+                self.api.buyv3(price[idx], OP_code.ACTIVES[ACTIVES[idx]], ACTION[idx], expirations[idx],idx, int(self.api.profile.balance_id))
             while len(self.api.buy_multi_option)<buy_len:
                 pass
             buy_id=[]            
@@ -703,12 +703,12 @@ class IQ_Option:
         logging.error('get_remaning(self,duration) ERROR duration')
         return "ERROR duration"
         
-    def buy(self, price, ACTIVES, ACTION, expirations):
+    def buy(self, price, ACTIVES, ACTION, expirations, balance_id):
         ACTIVE_ID =  OP_code.ACTIVES[ACTIVES]
         self.api.buy_successful[ACTIVE_ID] = None
         self.api.buy_id[ACTIVE_ID] = None
         self.request_count = self.request_count + 1
-        self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, self.request_count)
+        self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, self.request_count, balance_id)
         start_t=time.time()
         while self.api.buy_successful[ACTIVE_ID] == None and self.api.buy_id[ACTIVE_ID] == None:
             if time.time()-start_t>=30:
