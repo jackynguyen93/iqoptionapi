@@ -7,7 +7,7 @@ import iqoptionapi.constants as OP_code
 import iqoptionapi.global_value as global_value
 
 
-                
+
 class WebsocketClient(object):
     """Class for work with IQ option websocket."""
 
@@ -23,7 +23,7 @@ class WebsocketClient(object):
             on_open=self.on_open)
     def dict_queue_add(self,dict,maxdict,key1,key2,key3,value):
         if key3 in dict[key1][key2]:
-                    dict[key1][key2][key3]=value
+            dict[key1][key2][key3]=value
         else:
             while True:
                 try:
@@ -35,7 +35,7 @@ class WebsocketClient(object):
                     break
                 else:
                     #del mini key
-                    del dict[key1][key2][sorted(dict[key1][key2].keys(), reverse=False)[0]]   
+                    del dict[key1][key2][sorted(dict[key1][key2].keys(), reverse=False)[0]]
     def on_message(self, message): # pylint: disable=unused-argument
         """Method to process websocket messages."""
         logger = logging.getLogger(__name__)
@@ -71,12 +71,12 @@ class WebsocketClient(object):
             except:
                 logger.error("Cannot get top order")
                 pass
-    #######################################################
+        #######################################################
         #---------------------for_realtime_candle______________
         #######################################################
         elif message["name"] == "candle-generated":
-            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(message["msg"]["active_id"])]            
-            
+            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(message["msg"]["active_id"])]
+
             active=str(Active_name)
             size=int(message["msg"]["size"])
             from_=int(message["msg"]["from"])
@@ -85,12 +85,12 @@ class WebsocketClient(object):
 
             self.dict_queue_add(self.api.real_time_candles,maxdict,active,size,from_,msg)
             self.api.candle_generated_check[active][size]=True
-            
+
         elif message["name"]=="options":
             self.api.get_options_v2_data=message
         elif message["name"] == "candles-generated":
-            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(message["msg"]["active_id"])] 
-            active=str(Active_name)      
+            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(message["msg"]["active_id"])]
+            active=str(Active_name)
             for k,v in message["msg"]["candles"].items():
                 v["active_id"]=message["msg"]["active_id"]
                 v["at"]=message["msg"]["at"]
@@ -103,14 +103,14 @@ class WebsocketClient(object):
                 maxdict=self.api.real_time_candles_maxdict_table[Active_name][size]
                 msg=v
                 self.dict_queue_add(self.api.real_time_candles,maxdict,active,size,from_,msg)
-            self.api.candle_generated_all_size_check[active]=True 
+            self.api.candle_generated_all_size_check[active]=True
         elif message["name"]=="commission-changed":
             instrument_type=message["msg"]["instrument_type"]
             active_id=message["msg"]["active_id"]
-            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(active_id)]            
+            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(active_id)]
             commission=message["msg"]["commission"]["value"]
             self.api.subscribe_commission_changed_data[instrument_type][Active_name][self.api.timesync.server_timestamp]=int(commission)
-            
+
         #######################################################
         #______________________________________________________
         #######################################################
@@ -119,29 +119,29 @@ class WebsocketClient(object):
                 self.api.heartbeat(message["msg"])
             except:
                 pass
-        elif message["name"] == "profile":
-            #--------------all-------------
-            self.api.profile.msg=message["msg"]
-            #---------------------------
-            try:
-                self.api.profile.balance = message["msg"]["balance"]
-            except:
-                pass
-            
-            try:
-                self.api.profile.balance_id=message["msg"]["balance_id"]
-            except:
-                pass
-            
-            try:
-                self.api.profile.balance_type=message["msg"]["balance_type"]
-            except:
-                pass
-
-            try:
-                self.api.profile.balances=message["msg"]["balances"]
-            except:
-                pass
+        # elif message["name"] == "profile":
+        #     #--------------all-------------
+        #     self.api.profile.msg=message["msg"]
+        #     #---------------------------
+        #     try:
+        #         self.api.profile.balance = message["msg"]["balance"]
+        #     except:
+        #         pass
+        #
+        #     try:
+        #         self.api.profile.balance_id=message["msg"]["balance_id"]
+        #     except:
+        #         pass
+        #
+        #     try:
+        #         self.api.profile.balance_type=message["msg"]["balance_type"]
+        #     except:
+        #         pass
+        #
+        #     try:
+        #         self.api.profile.balances=message["msg"]["balances"]
+        #     except:
+        #         pass
 
         elif message["name"] == "candles":
             try:
@@ -164,27 +164,26 @@ class WebsocketClient(object):
         #*********************buyv3
         #buy_multi_option
         elif message["name"] == "option":
-            self.api.buy_multi_option[int(message["request_id"])] = message["msg"]
+            request_id = int(message["request_id"])
+            self.api.buy_multi_option[request_id] = message["msg"]
             try:
-                if 'act' in message["msg"]:
-                    ACTIVE = message["msg"]['act']
-                    if 'id' in message["msg"]:
-                        self.api.buy_successful[ACTIVE] = True
-                        self.api.buy_id[ACTIVE] =  message["msg"]['id']
-                    else:
-                        self.api.buy_successful[ACTIVE] = False
+                if 'act' in message["msg"] and 'id' in message["msg"]:
+                    self.api.buy_successful[request_id] = True
+                    self.api.buy_id[request_id] =  message["msg"]['id']
+                else:
+                    self.api.buy_successful[request_id] = False
+                    self.api.buy_id[request_id] =  message["msg"]['message']
             except Exception as e:
-
                 logger.error('fail to request buy' , e)
 
         #**********************************************************
         elif message["name"] == "listInfoData":
-           for get_m in message["msg"]:
-               self.api.listinfodata.set(get_m["win"],get_m["game_state"],get_m["id"])
+            for get_m in message["msg"]:
+                self.api.listinfodata.set(get_m["win"],get_m["game_state"],get_m["id"])
         elif message["name"] == "socket-option-opened":
             id=message["msg"]["id"]
             self.api.socket_option_opened[id]=message
-             
+
         elif message["name"] == "api_option_init_all_result":
             self.api.api_option_init_all_result = message["msg"]
         elif message["name"] == "initialization-data":
@@ -204,7 +203,7 @@ class WebsocketClient(object):
             self.api.microserviceName_binary_options_name_option[int(message["msg"]["option_id"])]=message
         elif message["name"]=="top-assets-updated":
             self.api.top_assets_updated_data[str(message["msg"]["instrument_type"])]=message["msg"]["data"]
-        elif message["name"]=="strike-list":  
+        elif message["name"]=="strike-list":
             self.api.strike_list=message
         elif message["name"]=="api_game_betinfo_result":
             try:
@@ -266,9 +265,9 @@ class WebsocketClient(object):
         elif message["name"]=="result":
             self.api.result=message["msg"]["success"]
         elif message["name"]=="instrument-quotes-generated":
-             
-            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(message["msg"]["active"])]  
-            period=message["msg"]["expiration"]["period"] 
+
+            Active_name=list(OP_code.ACTIVES.keys())[list(OP_code.ACTIVES.values()).index(message["msg"]["active"])]
+            period=message["msg"]["expiration"]["period"]
             ans={}
             for data in message["msg"]["quotes"]:
                 #FROM IQ OPTION SOURCE CODE
@@ -278,7 +277,7 @@ class WebsocketClient(object):
                 else:
                     askPrice=(float)(data["price"]["ask"])
                     ProfitPercent=((100-askPrice)*100)/askPrice
-                
+
                 for symble in data["symbols"]:
                     try:
                         """
@@ -303,8 +302,8 @@ class WebsocketClient(object):
                 self.api.profile.balance = message["msg"]["current_balance"]["amount"]
             except:
                 pass
-            
-    
+
+
     @staticmethod
     def on_error(wss, error): # pylint: disable=unused-argument
         """Method to process websocket errors."""
