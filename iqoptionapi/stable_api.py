@@ -376,25 +376,25 @@ class IQ_Option:
             pass
         return self.api.training_balance_reset_request
     def change_balance(self, Balance_MODE):
-        real_id = None
-        practice_id = None
+        self.real_id = None
+        self.practice_id = None
         while True:
             try:
                 self.get_balances()
                 for accunt in self.api.profile.balances:
                     if accunt["type"] == 1:
-                        real_id = accunt["id"]
+                        self.real_id = accunt["id"]
                     if accunt["type"] == 4:
-                        practice_id = accunt["id"]
+                        self.practice_id = accunt["id"]
                 break
             except:
                 logging.error('**error** change_balance()')
                 pass
         while self.get_balance_mode() != Balance_MODE:
             if Balance_MODE == "REAL":
-                self.api.changebalance(real_id)
+                self.api.changebalance(self.real_id)
             elif Balance_MODE == "PRACTICE":
-                self.api.changebalance(practice_id)
+                self.api.changebalance(self.practice_id)
             else:
                 logging.error("ERROR doesn't have this mode")
                 exit(1)
@@ -703,12 +703,12 @@ class IQ_Option:
         logging.error('get_remaning(self,duration) ERROR duration')
         return "ERROR duration"
 
-    def buy(self, price, ACTIVES, ACTION, expirations):
+    def buy(self, price, ACTIVES, ACTION, expirations, mode):
         ACTIVE_ID =  OP_code.ACTIVES[ACTIVES]
         self.request_count = self.request_count + 1
         self.api.buy_successful[self.request_count] = None
         self.api.buy_id[self.request_count] = None
-        self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, self.request_count)
+        self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, self.request_count, self.real_id if mode == 'REAL' else self.practice_id)
         start_t=time.time()
         while self.api.buy_successful[self.request_count] == None and self.api.buy_id[self.request_count] == None:
             if time.time()-start_t>=30:
