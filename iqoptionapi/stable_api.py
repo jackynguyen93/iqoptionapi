@@ -10,7 +10,7 @@ from collections import defaultdict
 from collections import deque
 from iqoptionapi.expiration import get_expiration_time,get_remaning_time
 from datetime import datetime,timedelta
-
+lock = threading.Lock()
 
 def nested_dict(n, type):
     if n == 1:
@@ -705,17 +705,19 @@ class IQ_Option:
 
     def buy(self, price, ACTIVES, ACTION, expirations, mode):
         ACTIVE_ID =  OP_code.ACTIVES[ACTIVES]
-        self.request_count = self.request_count + 1
-        self.api.buy_successful[self.request_count] = None
-        self.api.buy_id[self.request_count] = None
-        self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, self.request_count, self.real_id if mode == 'REAL' else self.practice_id)
+        with lock:
+            request_id = self.request_count + 1
+            self.request_count = self.request_count + 1
+        self.api.buy_successful[request_id] = None
+        self.api.buy_id[request_id] = None
+        self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, request_id, self.real_id if mode == 'REAL' else self.practice_id)
         start_t=time.time()
-        while self.api.buy_successful[self.request_count] == None and self.api.buy_id[self.request_count] == None:
+        while self.api.buy_successful[request_id] == None and self.api.buy_id[request_id] == None:
             if time.time()-start_t>=30:
                 logging.error('**warning** buy late 30 sec')
                 return False,None
 
-        return self.api.buy_successful[self.request_count],self.api.buy_id[self.request_count]
+        return self.api.buy_successful[request_id],self.api.buy_id[request_id]
 
     def buyv4(self, price, ACTIVE_ID, ACTION, expire, option_mode):
         ACTIVE_ID = int(ACTIVE_ID)
