@@ -713,9 +713,12 @@ class IQ_Option:
         self.api.buyv3(price, ACTIVE_ID, ACTION, expirations, request_id, self.real_id if mode == 'REAL' else self.practice_id)
         start_t=time.time()
         while self.api.buy_successful[request_id] == None and self.api.buy_id[request_id] == None:
-            if time.time()-start_t>=30:
-                logging.error('**warning** buy late 30 sec')
-                return False,None
+            try:
+                if time.time()-start_t>=30:
+                    logging.error('**warning** buy late 30 sec')
+                    return False,None
+            except:
+                return False, 'Fail to buy order'
 
         return self.api.buy_successful[request_id],self.api.buy_id[request_id]
 
