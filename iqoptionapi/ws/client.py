@@ -43,7 +43,7 @@ class WebsocketClient(object):
         message = json.loads(str(message))
         #### for testing
         if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
-                                   "profile", "candles", 'commission-changed', 'option-archived', 'option-closed',
+                                   "candles", 'commission-changed', 'option-archived', 'option-closed',
                                    'socket-option-closed', 'socket-option-opened', 'option-opened',
                                    "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
             print(message)
@@ -119,29 +119,30 @@ class WebsocketClient(object):
                 self.api.heartbeat(message["msg"])
             except:
                 pass
-        # elif message["name"] == "profile":
-        #     #--------------all-------------
-        #     self.api.profile.msg=message["msg"]
-        #     #---------------------------
-        #     try:
-        #         self.api.profile.balance = message["msg"]["balance"]
-        #     except:
-        #         pass
-        #
-        #     try:
-        #         self.api.profile.balance_id=message["msg"]["balance_id"]
-        #     except:
-        #         pass
-        #
-        #     try:
-        #         self.api.profile.balance_type=message["msg"]["balance_type"]
-        #     except:
-        #         pass
-        #
-        #     try:
-        #         self.api.profile.balances=message["msg"]["balances"]
-        #     except:
-        #         pass
+        elif message["name"] == "profile":
+            if not self.api.profile.balance:
+                #--------------all-------------
+                self.api.profile.msg=message["msg"]
+                #---------------------------
+                try:
+                    self.api.profile.balance = message["msg"]["balance"]
+                except:
+                    pass
+
+                try:
+                    self.api.profile.balance_id=message["msg"]["balance_id"]
+                except:
+                    pass
+
+                try:
+                    self.api.profile.balance_type=message["msg"]["balance_type"]
+                except:
+                    pass
+
+                try:
+                    self.api.profile.balances=message["msg"]["balances"]
+                except:
+                    pass
 
         elif message["name"] == "candles":
             try:

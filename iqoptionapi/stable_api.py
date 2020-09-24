@@ -343,14 +343,7 @@ class IQ_Option:
 
     def get_balances(self):
         # self.api.profile.balance=None
-        while True:
-            try:
-                respon = self.get_profile()
-                self.api.profile.balances = respon["result"]["balances"]
-                break
-            except:
-                logging.error('**error** get_balances()')
-                pass
+        while not self.api.profile.balances:
             time.sleep(self.suspend)
         return self.api.profile.balances
 
@@ -390,14 +383,14 @@ class IQ_Option:
             except:
                 logging.error('**error** change_balance()')
                 pass
-        while self.get_balance_mode() != Balance_MODE:
-            if Balance_MODE == "REAL":
-                self.api.changebalance(self.real_id)
-            elif Balance_MODE == "PRACTICE":
-                self.api.changebalance(self.practice_id)
-            else:
-                logging.error("ERROR doesn't have this mode")
-                exit(1)
+        #while self.get_balance_mode() != Balance_MODE:
+        if Balance_MODE == "REAL":
+            self.api.changebalance(self.real_id)
+        elif Balance_MODE == "PRACTICE":
+            self.api.changebalance(self.practice_id)
+        else:
+            logging.error("ERROR doesn't have this mode")
+            exit(1)
     # ________________________________________________________________________
     # _______________________        CANDLE      _____________________________
     # ________________________self.api.getcandles() wss________________________
