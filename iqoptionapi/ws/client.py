@@ -5,7 +5,7 @@ import logging
 import websocket
 import iqoptionapi.constants as OP_code
 import iqoptionapi.global_value as global_value
-
+from ftfy import fix_encoding
 
 
 class WebsocketClient(object):
@@ -39,7 +39,7 @@ class WebsocketClient(object):
     def on_message(self, message): # pylint: disable=unused-argument
         """Method to process websocket messages."""
         logger = logging.getLogger(__name__)
-
+        message = fix_encoding(message)
         message = json.loads(str(message))
         #### for testing
         if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
