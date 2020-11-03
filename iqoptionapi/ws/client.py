@@ -125,16 +125,6 @@ class WebsocketClient(object):
                 self.api.profile.msg=message["msg"]
                 #---------------------------
                 try:
-                    self.api.profile.balance = message["msg"]["balance"]
-                except:
-                    pass
-
-                try:
-                    self.api.profile.balance_id=message["msg"]["balance_id"]
-                except:
-                    pass
-
-                try:
                     self.api.profile.balance_type=message["msg"]["balance_type"]
                 except:
                     pass

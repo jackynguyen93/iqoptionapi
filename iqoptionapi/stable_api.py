@@ -42,7 +42,6 @@ class IQ_Option:
         # --start
         self.connect()
         # self.update_ACTIVES_OPCODE() this auto function delay too long
-        self.get_balance_id()
         self.request_count=1
     # --------------------------------------------------------------------------
 
@@ -315,31 +314,12 @@ class IQ_Option:
                 logging.error('**error** get_profile try reconnect')
                 self.connect()
 
-    def get_balance_id(self):
-        self.api.profile.balance_id = None
-        while True:
-            try:
-                respon = self.get_profile()
-                self.api.profile.balance_id = respon["result"]["balance_id"]
-                break
-            except:
-                logging.error('**error** get_balance()')
-
-            time.sleep(self.suspend)
-        return self.api.profile.balance
-
     def get_balance(self):
-        if not self.api.profile.balance:
-            while True:
-                try:
-                    respon = self.get_profile()
-                    self.api.profile.balance = respon["result"]["balance"]
-                    break
-                except:
-                    logging.error('**error** get_balance()')
-
-                time.sleep(self.suspend)
-        return self.api.profile.balance
+        if self.balance_mode == "REAL":
+            balance_id = self.real_id
+        elif self.balance_mode == "PRACTICE":
+            balance_id = self.practice_id
+        return next(i for i in self.get_balances() if i['id'] == balance_id)['amount']
 
     def get_balances(self):
         # self.api.profile.balance=None
@@ -347,30 +327,17 @@ class IQ_Option:
             time.sleep(self.suspend)
         return self.api.profile.balances
 
-    def get_balance_mode(self):
-        # self.api.profile.balance_type=None
-        while True:
-            try:
-                respon = self.get_profile()
-                self.api.profile.balance_type = respon["result"]["balance_type"]
-                break
-            except:
-                logging.error('**error** get_balance_mode()')
-                pass
-            time.sleep(self.suspend)
-        if self.api.profile.balance_type == 1:
-            return "REAL"
-        elif self.api.profile.balance_type == 4:
-            return "PRACTICE"
     def reset_practice_balance(self):
         self.api.training_balance_reset_request=None
         self.api.reset_training_balance()
         while self.api.training_balance_reset_request==None:
             pass
         return self.api.training_balance_reset_request
+
     def change_balance(self, Balance_MODE):
         self.real_id = None
         self.practice_id = None
+        self.balance_mode = Balance_MODE
         while True:
             try:
                 self.get_balances()
@@ -818,7 +785,7 @@ class IQ_Option:
             if key.find("SPT")!=-1:
                 return profit[key]
         return False
-    #thank thiagottjv 
+    #thank thiagottjv
     #https://github.com/Lu-Yi-Hsun/iqoptionapi/issues/65#issuecomment-513998357
     def buy_digital_spot(self, active,amount, action, duration):
         #Expiration time need to be formatted like this: YYYYMMDDHHII
