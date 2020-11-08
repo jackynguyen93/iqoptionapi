@@ -1,12 +1,12 @@
+# -*- coding: utf-8 -*-
 """Module for IQ option websocket."""
-
 import json
 import logging
 import websocket
 import iqoptionapi.constants as OP_code
 import iqoptionapi.global_value as global_value
 from ftfy import fix_encoding
-
+import re
 
 class WebsocketClient(object):
     """Class for work with IQ option websocket."""
@@ -41,13 +41,14 @@ class WebsocketClient(object):
         logger = logging.getLogger(__name__)
         try:
             #message = fix_encoding(message)
-            message = json.loads(str(message))
+            cleanMessage = re.sub(r"\\u....", '', str(message))
+            message = json.loads(cleanMessage)
             #### for testing
-            if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
-                                       "candles", 'commission-changed', 'option-archived', 'option-closed',
-                                       'socket-option-closed', 'socket-option-opened', 'option-opened',
-                                       "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
-                print(message)
+            # if message["name"] not in ["timeSync", "candle-generated", "options", "candles-generated", "heartbeat",
+            #                            "candles", 'commission-changed', 'option-archived', 'option-closed',
+            #                            'socket-option-closed', 'socket-option-opened', 'option-opened',
+            #                            "leaderboard-deals-client", 'api_option_init_all_result', 'live-deal-binary-option-placed', 'balance-changed']:
+            #     print(message)
             #####
             if message["name"] == "timeSync":
                 self.api.timesync.server_timestamp = message["msg"]
@@ -205,7 +206,7 @@ class WebsocketClient(object):
                         data = message["msg"]['result']['data']
                         #print(data)
                         key = list(data.keys())[0]
-                        print('result ' + data[key]['win'])
+                        #print('result ' + data[key]['win'])
                         self.api.game_betinfo.isSuccessful= data[key]['win'] != ''#message["msg"]["isSuccessful"]
                     else:
                         self.api.game_betinfo.isSuccessful = False
