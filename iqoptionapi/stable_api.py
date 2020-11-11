@@ -319,6 +319,8 @@ class IQ_Option:
             balance_id = self.real_id
         elif self.balance_mode == "PRACTICE":
             balance_id = self.practice_id
+        if self.api.profile.balance:
+            return self.api.profile.balance
         return next(i for i in self.get_balances() if i['id'] == balance_id)['amount']
 
     def get_balances(self):
