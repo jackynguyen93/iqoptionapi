@@ -353,13 +353,13 @@ class IQ_Option:
                 logging.error('**error** change_balance()')
                 pass
         #while self.get_balance_mode() != Balance_MODE:
-        if Balance_MODE == "REAL":
-            self.api.changebalance(self.real_id)
-        elif Balance_MODE == "PRACTICE":
-            self.api.changebalance(self.practice_id)
-        else:
-            logging.error("ERROR doesn't have this mode")
-            exit(1)
+        # if Balance_MODE == "REAL":
+        #     self.api.changebalance(self.real_id)
+        # elif Balance_MODE == "PRACTICE":
+        #     self.api.changebalance(self.practice_id)
+        # else:
+        #     logging.error("ERROR doesn't have this mode")
+        #     exit(1)
     # ________________________________________________________________________
     # _______________________        CANDLE      _____________________________
     # ________________________self.api.getcandles() wss________________________
